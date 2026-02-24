@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project | MyPortfolio</title>
+    <link rel="icon" type="image/png" sizes="40x40" href="images/joy_em.jpg">
+    <link rel="shortcut icon" href="images/joy_em.jpg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100..700&family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        body {
+        background-color: #000103;
+    background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 30px 30px;
+    background-position: 0 0;
+    background-attachment: fixed;
+        }
+
+        .floating-back-btn {
+            position: fixed; top: 1.5rem; left: 2rem;
+            display: flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            color: #ffffff; padding: 0.4rem 1rem; border-radius: 18px; text-decoration: none;
+            font-family: "Roboto Mono", monospace; font-size: 0.85rem; font-weight: 600;
+            z-index: 1001; transition: background 0.3s ease, border-color 0.3s ease;
+            white-space: nowrap; cursor: pointer;
+        }
+        .floating-back-btn:hover { background: rgba(144,70,255,0.15); border-color: rgba(144,70,255,0.4); color: #ffffff; }
+
+        .detail-wrapper { max-width: 1200px; margin: 0 auto; padding: 140px 0px 100px; }
+        .detail-content { max-width: 860px; margin: 0 auto; padding: 0 48px; }
+
+        /* ── 3D CAROUSEL ── */
+        .carousel-scene {
+            width: 100%; height: 520px; position: relative;
+            perspective: 2200px; perspective-origin: 50% 50%;
+            margin-bottom: 28px; display: flex; align-items: center; justify-content: center;
+            padding: 0 60px; box-sizing: border-box;
+        }
+        .carousel-stage { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+        .carousel-card {
+            position: absolute; top: 50%; border-radius: 16px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.10); cursor: pointer;
+            transition: all 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform, opacity, left, width, height;
+            background: #0a0a0a; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        .carousel-card img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            pointer-events: none; user-select: none; transition: filter 0.55s ease;
+        }
+        .carousel-card.pos-center {
+            width: 88%; height: 100%; left: 50%;
+            transform: translateX(-50%) translateY(-50%) rotateY(0deg);
+            z-index: 10; opacity: 1; border: 2px solid rgba(255,255,255,0.573); background: #000;
+        }
+        .carousel-card.pos-center img { filter: brightness(1); object-position: top; }
+        .carousel-card.pos-prev {
+            width: 10%; height: 60%; left: 0%;
+            transform: translateY(-50%) rotateY(48deg);
+            z-index: 5; opacity: 0.3; transform-origin: left center; background: #000;
+        }
+        .carousel-card.pos-prev img { filter: brightness(0.25); }
+        .carousel-card.pos-next {
+            width: 10%; height: 60%; right: 0%; left: auto;
+            transform: translateY(-50%) rotateY(-48deg);
+            z-index: 5; opacity: 0.3; transform-origin: right center; background: #000;
+        }
+        .carousel-card.pos-next img { filter: brightness(0.25); }
+        .carousel-card.pos-far-left {
+            width: 15%; height: 50%; left: -6%;
+            transform: translateY(-50%) rotateY(50deg);
+            z-index: 1; opacity: 0; pointer-events: none; background: #111;
+        }
+        .carousel-card.pos-far-right {
+            width: 15%; height: 50%; right: -6%; left: auto;
+            transform: translateY(-50%) rotateY(-50deg);
+            z-index: 1; opacity: 0; pointer-events: none; background: #111;
+        }
+        .video-wrapper {
+    position: relative; width: 100%; height: 100%;
+}
+.video-play-overlay {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px; height: 60px; border-radius: 50%;
+    background: rgba(0,0,0,0.55); border: 2px solid rgba(255,255,255,0.6);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.25s ease; pointer-events: none; z-index: 5;
+}
+.video-wrapper:hover .video-play-overlay { opacity: 1; }
+.video-wrapper.paused .video-play-overlay { opacity: 1; }
+.video-play-overlay svg { fill: white; width: 22px; height: 22px; }
+.video-mute-indicator {
+    position: absolute; bottom: 12px; right: 14px;
+    background: rgba(0,0,0,0.5); border-radius: 20px;
+    padding: 4px 10px; display: flex; align-items: center; gap: 5px;
+    font-family: "Roboto Mono", monospace; font-size: 0.7rem; color: #fff;
+    opacity: 0; transition: opacity 0.25s ease; pointer-events: none; z-index: 5;
+}
+.video-wrapper:hover .video-mute-indicator { opacity: 1; }
+
+        /* CAROUSEL CONTROLS */
+        .carousel-card video {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    pointer-events: none; user-select: none; transition: filter 0.55s ease;
+}
+.carousel-card.pos-center video { filter: brightness(1); }
+.carousel-card.pos-prev video   { filter: brightness(0.25); }
+.carousel-card.pos-next video   { filter: brightness(0.25); }
+        .carousel-controls {
+            display: flex; align-items: center; justify-content: center;
+            gap: 16px; margin-top: -8px; margin-bottom: 40px;
+        }
+        .carousel-btn {
+            width: 52px; height: 52px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.18); background: rgba(15,15,15,0.9);
+            color: #ffffff; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+        .carousel-btn:hover { border-color: rgba(255,255,255,0.35); background: rgba(30,30,30,0.95); }
+        .carousel-btn svg { width: 20px; height: 20px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .carousel-btn.active { border-color: #7c3aed; }
+        .carousel-btn.active:hover { border-color: #a855f7; }
+        .carousel-dots { display: flex; gap: 7px; align-items: center; max-width: 120px; overflow: hidden; justify-content: center; }
+        .carousel-dot {
+            width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2);
+            cursor: pointer; transition: all 0.3s ease; flex-shrink: 0;
+        }
+        .carousel-dot.active { background: #9046ff; width: 20px; border-radius: 3px; }
+
+        /* ── DETAIL STYLES ── */
+        .detail-title { font-family: "Roboto Mono", monospace; font-size: 2.2rem; font-weight: 900; color: #ffffff; margin-bottom: 14px; letter-spacing: -1px; line-height: 1.2; }
+        .detail-tagline { font-family: "Roboto Mono", monospace; font-size: 0.95rem; color: #888; margin-bottom: 24px; line-height: 1.6; }
+        .detail-meta-row {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px; margin-bottom: 48px;
+            padding-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .detail-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .detail-tags .tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(144,70,255,0.08); border: 1px solid rgba(144,70,255,0.2);
+            color: #d9c7f4; padding: 4px 12px; border-radius: 20px;
+            font-family: "Roboto Mono", monospace; font-size: 0.78rem;
+        }
+        .detail-tags .tag img { width: 14px; height: 14px; object-fit: contain; }
+        .detail-section { margin-bottom: 36px; }
+        .detail-section h2 { font-family: "Roboto Mono", monospace; font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 12px; letter-spacing: 0.05em; }
+        .detail-section p { font-family: "Roboto Mono", monospace; font-size: 0.88rem; color: #aaa; line-height: 1.8; }
+        .detail-bullets { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+        .detail-bullets li { font-family: "Roboto Mono", monospace; font-size: 0.85rem; color: #aaa; line-height: 1.7; padding-left: 20px; position: relative; }
+        .detail-bullets li::before { content: '›'; position: absolute; left: 0; color: #9046ff; font-size: 1.1rem; line-height: 1.5; }
+        .detail-bullets li strong { color: #ddd; }
+
+        /* ── DEVELOPER CREDIT ── */
+        .developer-credit { margin-top: 56px; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+        .developer-credit-label { font-family: "Roboto Mono", monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: #444; }
+        @keyframes shimmer-spin { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+        .developer-credit-logo-wrapper { position: relative; width: 104px; height: 104px; border-radius: 20px; margin-top: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 0 1.5px rgba(255,255,255,0.08); }
+        .developer-credit-logo-wrapper::before { content: ''; position: absolute; top: 50%; left: 50%; width: 180%; height: 180%; transform: translate(-50%,-50%) rotate(0deg); background: conic-gradient(from 0deg, transparent 0deg, transparent 30deg, rgba(255,255,255,0.03) 50deg, rgba(255,255,255,0.15) 70deg, rgba(255,255,255,0.5) 85deg, rgba(255,255,255,0.85) 100deg, rgba(255,255,255,1) 110deg, rgba(255,255,255,0.85) 120deg, rgba(255,255,255,0.5) 135deg, rgba(255,255,255,0.15) 150deg, rgba(255,255,255,0.03) 170deg, transparent 190deg, transparent 360deg); animation: shimmer-spin 2.4s linear infinite; z-index: 0; }
+        .developer-credit-logo-wrapper::after { content: ''; position: absolute; inset: 2px; border-radius: 18px; background: #111; z-index: 1; }
+        .developer-credit-logo { position: relative; z-index: 2; width: 100px; height: 100px; object-fit: contain; border-radius: 16px; opacity: 0.95; transition: opacity 0.3s ease; }
+        .developer-credit-logo-wrapper:hover .developer-credit-logo { opacity: 1; }
+        .developer-credit-name { font-family: "Roboto Mono", monospace; font-size: 0.95rem; font-weight: 700; color: #ccc; letter-spacing: 0.08em; }
+        .developer-credit-caption { font-family: "Roboto Mono", monospace; font-size: 0.76rem; color: #555; line-height: 1.7; max-width: 300px; margin: 0; }
+        .not-found { text-align: center; padding: 120px 40px; font-family: "Roboto Mono", monospace; color: #555; }
+        .not-found h2 { font-size: 1.4rem; color: #888; margin-bottom: 12px; }
+
+        @media (max-width: 640px) {
+            .detail-wrapper { padding: 120px 20px 80px; }
+            .detail-title { font-size: 1.5rem; }
+            .carousel-scene { height: 300px; }
+            .carousel-card.pos-center { width: 70%; height: 94%; }
+            .carousel-card.pos-prev, .carousel-card.pos-next { width: 22%; height: 60%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════════ UNIFIED NAVBAR ══════════ -->
+<nav class="navbar" id="navbar">
+<div class="nav-container" style="display:flex;align-items:center;width:100%;max-width:1400px;margin:0 auto;padding:0 1.5rem;">
+        <a href="index.html" class="logo" style="flex:1;">My<span class="logo-highlight">Portfolio</span></a>
+        <ul class="nav-menu" style="flex-shrink:0;">
+            <li><a href="index.html#home"     class="nav-link">Home</a></li>
+            <li><a href="index.html#about"    class="nav-link">About</a></li>
+            <li><a href="index.html#tools"    class="nav-link">Tools</a></li>
+            <li><a href="index.html#timeline" class="nav-link">Journey</a></li>
+            <li><a href="blog.html"           class="nav-link">Blog</a></li>
+            <li><a href="index.html#projects" class="nav-link active">Projects</a></li>
+        </ul>
+        <div class="nav-actions" style="flex:1;display:flex;align-items:center;gap:1rem;justify-content:flex-end;">
+            <a href="index.html#contact" class="btn-contact">Contact</a>
+            <a href="Resume.pdf" target="_blank" class="btn-resume">Resume</a>
+        </div>
+    </div>
+</nav>
+
+<a id="backBtn" href="projects.html" class="floating-back-btn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </svg>
+    Back
+</a>
+
+<!-- MAIN CONTENT -->
+<div class="detail-wrapper" id="detailWrapper">
+    <div class="not-found"><h2>Loading...</h2></div>
+</div>
+
+<!-- ══════════ UNIFIED FOOTER ══════════ -->
+<footer class="site-footer">
+    <div class="footer-top">
+        <div class="footer-brand">
+            <h3 class="footer-name">Nacion<span class="footer-name-highlight"></span></h3>
+            <p class="footer-tagline">2nd year BSIT student passionate about <br>building real-world applications.</p>        </div>
+        <div class="footer-nav">
+            <p class="footer-nav-label">NAVIGATION</p>
+            <ul>
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#tools">Tools</a></li>
+                <li><a href="index.html#timeline">Journey</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+
+            </ul>
+        </div>
+        <div class="footer-connect">
+            <p class="footer-nav-label">CONNECT</p>
+            <div class="footer-social-icons">
+                <a href="https://github.com/geiym" target="_blank" class="footer-social-icon" title="GitHub">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                </a>
+                <a href="https://dev.to/joym" target="_blank" class="footer-social-icon" title="Dev.to">
+                        <svg viewBox="0 0 24 24" fill="white">
+                            <path d="M7.42 10.05c-.18-.16-.46-.23-.84-.23H6l.02 2.44.04 2.45.56-.02c.41 0 .63-.07.83-.26.24-.24.26-.36.26-2.2 0-1.91-.02-1.96-.29-2.18zM0 4.94v14.12h24V4.94H0zM8.56 15.3c-.44.58-1.06.77-2.53.77H4.71V8.53h1.4c1.67 0 2.16.18 2.6.9.27.43.29.6.32 2.57.05 2.23-.02 2.73-.47 3.3zm5.09-5.47h-2.47v1.77h1.52v1.28l-.72.04-.75.03v1.77l1.22.03 1.2.04v1.28h-1.6c-1.53 0-1.6-.01-1.87-.3l-.3-.28v-3.16c0-3.02.01-3.18.25-3.48.23-.31.25-.31 1.88-.31h1.64v1.29zm4.68 5.45c-.17.43-.64.79-1 .79-.18 0-.45-.15-.67-.39-.32-.32-.45-.63-.82-2.08l-.9-3.39-.45-1.67h.76c.4 0 .75.02.75.05 0 .06 1.16 4.54 1.26 4.83.04.15.32-.7.73-2.3l.6-2.45.47-.14.45-.14h.79l-.57 2.14c-.32 1.17-.73 2.69-.91 3.36-.22.81-.37 1.15-.5 1.4z"/>
+                        </svg>
+                </a>
+                <a href="https://discord.gg/qggPWaABjk" target="_blank" class="footer-social-icon" title="Discord">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                </a>
+                <a href="https://www.linkedin.com/in/joymm-nacion-746b523b2" target="_blank" class="footer-social-icon" title="LinkedIn">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
+                <a href="https://www.facebook.com/joymhelyn.nacion" target="_blank" class="footer-social-icon" title="Facebook">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/joymhelyn_nn" target="_blank" class="footer-social-icon" title="Instagram">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </a>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=joymhelynnn@gmail.com&su=Portfolio Inquiry&body=Hello Joymhelyn," target="_blank" class="footer-social-icon" title="Email">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </a>
+                <a href="Resume.pdf" target="_blank" class="footer-social-icon" title="Resume">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 Joymhelyn Nacion. All rights reserved.</p>
+        <p>Made with <span style="color:#9046ff;">♥</span> in Camarines Norte</p>
+    </div>
+</footer>
+
+<script>
+    window.addEventListener('scroll', () => {
+        document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 80);
+    });
+
+    const projects = {
+        'tri-liners': {
+            title: 'TRI Liners Inventory and Sales Management System',
+            tagline: 'An all-in-one desktop solution for tracking motor parts inventory, managing supplier orders, and automating sales records.',
+            images: ['images/login.png','images/dashboard.png','images/supplier.png','images/logout.png'],
+            tags: [
+                { label: 'Java',  icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
+                { label: 'MySQL', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
+                { label: 'XAMPP', icon: 'images/xampp.png' }
+            ],
+            period: 'Jan 2026 – March 2026', type: 'Desktop Application',
+            overview: `TRI Liners is an end-to-end management system for motor parts and accessories. It combines real-time inventory tracking, purchase order management, and detailed sales analytics to provide complete operational control. With built-in activity logging and structured product categorization, TRI Liners transforms raw transaction data into a clear, manageable business workflow`,
+            features: [
+                { title: 'Comprehensive Inventory Tracking', desc: 'Monitors stock levels of motor parts in real-time with automatic quantity updates based on sales and purchase transactions.' },
+                { title: 'Purchase Order Management', desc: 'Creates and tracks purchase orders from suppliers with status monitoring to ensure efficient restocking processes.' },
+                { title: 'Sales Transaction Monitoring', desc: 'Records and tracks daily sales transactions with automated stock deductions and transaction history logs.' },
+                { title: 'Product, Category & Brand Management', desc: 'Allows administrators to add, edit, and organize motor parts by category and brand for structured inventory control.' },
+                { title: 'User Activity Logging', desc: 'Tracks user actions within the system to maintain accountability and improve operational transparency.' },
+                { title: 'Report Generation & Analytics', desc: 'Generates detailed reports on inventory levels, sales performance, and purchase history to support business decision-making.' }
+            ]
+        },
+        'primo-hardware': {
+            title: 'Primo Hardware Inventory and Sales Management System with Customer Catalog',
+            tagline: 'A comprehensive inventory and sales platform designed to streamline warehouse operations, supplier tracking, and customer engagement for a hardware business.',
+            images: ['images/primopanel.png','images/primo1.png','images/primo2.png','images/primo3.png','images/primo4.png','images/primo5.png'],
+            tags: [
+                { label: 'Java',  icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
+                { label: 'MySQL', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
+                { label: 'XAMPP', icon: 'images/xampp.png' }
+            ],
+            period: 'Oct 2025 – Dec 2025', type: 'Desktop Application',
+            overview: `Primo Hardware is a full-featured inventory and sales management solution built for a hardware retail business. The system manages real-time stock across warehouses, handles supplier procurement, processes sales orders, and provides customers with an intuitive product catalog — all backed by a high-performance normalized database.`,
+            features: [
+                { title: 'Inventory & Stock Management', desc: 'Real-time tracking of stock levels (SKUs) across multiple warehouses with automated reorder thresholds.' },
+                { title: 'Sales & Purchase Automation', desc: 'Streamlined creation of sales orders and supplier purchase orders with full status tracking.' },
+                { title: 'Supplier & User Administration', desc: 'Centralized management for supplier records and system users with role-based access control.' },
+                { title: 'Customer Product Catalog', desc: 'A dedicated interface for customers to browse products by category, price, and availability.' },
+                { title: 'Data-Driven Analytics', desc: 'Comprehensive reporting suite including Sales, Revenue, Product Performance, and Inventory analysis.' }
+            ]
+        },
+        'file-manager': {
+            title: 'File Manager',
+            tagline: 'A desktop utility built with Java that provides a high-performance alternative to standard system explorers.',
+            images: ['images/File1.png','images/File2.png','images/File3.png','images/File4.png','images/File5.png'],
+            tags: [{ label: 'Java', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' }],
+            period: 'April 2025 – May 2025', type: 'Desktop Application',
+            overview: `A custom-built Java desktop file manager offering a rich, dual-pane browsing interface with advanced file operations, search and sort capabilities, content viewing, and storage visualization — providing a faster and more functional alternative to the operating system's default file explorer.`,
+            features: [
+                { title: 'Dual-Interface File Browsing', desc: 'Side-by-side pane navigation for efficient file management and transfers between directories.' },
+                { title: 'Full CRUD Operations', desc: 'Create, read, update, and delete files and folders with intuitive controls and confirmation prompts.' },
+                { title: 'File Content Viewer & Editor', desc: 'Built-in viewer for text files with basic editing and file properties inspection.' },
+                { title: 'Advanced Search & Sort', desc: 'Search files by name, extension, or date modified with multi-column sort support.' },
+                { title: 'Storage Visualization', desc: 'Visual disk usage breakdown to help users quickly identify space-consuming files and folders.' }
+            ]
+        },
+        'brentmin-roofing': {
+            title: 'Brentmin Roofing Enterprise',
+            tagline: 'A business website featuring online job application, service portfolio showcase, and centralized data management system.',
+            images: ['images/brent1.png','images/brent2.png','images/brent3.png','images/brent4.png','images/brent5.png','images/brentmin1.png','images/brentmin2.png'],
+            tags: [
+                { label: 'HTML',       icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
+                { label: 'CSS',        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg' },
+                { label: 'JavaScript', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
+                { label: 'PHP',        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg' }
+            ],
+            period: 'Nov 2024 – Feb 2025', type: 'Website',
+            overview: `Developed a professional, full-stack website for Brentmin Roofing Enterprise to serve as a centralized digital hub for their business operations. The site showcases their project portfolio and service offerings while enabling online recruitment and centralizing backend data management for the business team.`,
+            features: [
+                { title: 'Responsive Web Design', desc: 'Designed and implemented fully responsive pages that adapt seamlessly across desktop, tablet, and mobile devices.' },
+                { title: 'Online Career & Recruitment System', desc: 'Integrated a careers page where job seekers can submit applications directly through the website.' },
+                { title: 'Service Portfolio Showcase', desc: 'Dynamic gallery and portfolio section highlighting completed roofing projects and service offerings.' },
+                { title: 'Backend Data Management', desc: 'Developed a PHP and MySQL powered admin panel for centralized management of applications, inquiries, and content.' },
+                { title: 'FAQ Section', desc: 'Built a dynamic FAQ section to reduce customer support load and improve user experience.' },
+                { title: 'Contact & Inquiry System', desc: 'Fully functional contact form routing inquiries to the business with server-side validation.' }
+            ],
+            developer: { logo: 'images/MadTech.jpg', name: 'MAD Tech', caption: 'Built with passion by the MAD Tech team.' }
+        },
+        'shs-portfolio': {
+            title: 'Senior High School Graduate Portfolio Website',
+            tagline: 'A personal academic portfolio documenting a complete Senior High School journey across Grade 11 and Grade 12.',
+            images: ['images/ash1.png','images/ash2.png','images/ash3.png'],
+            tags: [
+                { label: 'HTML',       icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
+                { label: 'CSS',        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg' },
+                { label: 'JavaScript', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' }
+            ],
+            period: '2024 – 2025', type: 'Website',
+            overview: `Designed and developed a complete personal portfolio website for a graduating Senior High School student. The site serves as a digital academic record, presenting the student's full Grade 11 and Grade 12 journey in a clean, structured format. The portfolio highlights academic growth, community involvement, and personal reflection throughout the SHS program.`,
+            features: [
+                { title: 'Module Key Takeaways', desc: 'Each subject module is documented with summarized key learnings, helping visualize academic progress across both grade levels.' },
+                { title: 'Service Learning Experiences', desc: 'A dedicated section showcasing community service activities, outreach programs, and immersion experiences completed during SHS.' },
+                { title: 'Personal Reflections', desc: 'Thoughtful written reflections per semester, capturing personal growth, challenges overcome, and lessons learned.' },
+                { title: 'Grade 11 & 12 Timeline', desc: 'A visual timeline separating and organizing content by grade level for easy navigation.' },
+                { title: 'Responsive Design', desc: 'Fully responsive layout that works seamlessly on desktop and mobile devices.' }
+            ]
+        },
+        'project-b': {
+    title: 'Arduino Arcade Machine',
+    tagline: 'A handheld arcade machine built with Arduino, bringing three classic games to life with physical hardware and interactive controls.',
+    images: ['videos/Formative3.mp4'],
+    tags: [
+        { label: 'Arduino (C++)', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/arduino/arduino-original.svg' }
+    ],
+    period: 'Feb 2025', type: 'Formative Assessment',
+    overview: `A custom-built arcade machine powered by Arduino that runs three classic games — Connect 4, Minesweeper, and Memory Game. The project combines hardware design and embedded C++ programming to deliver a fully functional arcade experience. Game logic, input handling, and display output are all managed directly through the Arduino, making it a hands-on exploration of embedded systems and interactive electronics.`,
+    features: [
+        { title: 'Connect 4', desc: 'A two-player strategy game where opponents take turns dropping pieces, with the Arduino detecting wins across rows, columns, and diagonals in real time.' },
+        { title: 'Minesweeper', desc: 'A single-player puzzle game where the player navigates a grid to uncover safe tiles while avoiding hidden mines, all rendered and controlled through Arduino.' },
+        { title: 'Memory Game', desc: 'A pattern-matching challenge that tests the player\'s memory by displaying sequences of lights or symbols that must be recalled and repeated correctly.' }
+    ]
+},
+'project-a': {
+    title: 'Minecraft Creeper Game',
+    tagline: 'A Minecraft Creeper replica that senses nearby objects — lighting up and buzzing faster the closer you get, just like the real thing.',
+    images: ['videos/Formative2.mp4'],
+    tags: [
+        { label: 'Arduino (C++)', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/arduino/arduino-original.svg' }
+    ],
+    period: 'Feb 2025', type: 'Formative Assessment',
+    overview: `A Minecraft Creeper-themed Arduino project that uses an ultrasonic sensor to detect nearby objects. When an object enters its range, the Creeper's LED eyes light up and the buzzer activates. The closer the object gets, the faster the buzzer beeps — mimicking the Creeper's iconic pre-explosion countdown and creating a fun, interactive proximity alarm.`,
+    features: [
+        { title: 'Proximity Detection', desc: 'Uses an HC-SR04 ultrasonic sensor to continuously measure the distance of objects directly in front of the Creeper in real time.' },
+        { title: 'LED Indicator', desc: 'The Creeper\'s eyes light up the moment an object enters its detection range, providing a clear visual alert.' },
+        { title: 'Dynamic Buzz Alert', desc: 'The buzzer beeps faster as the object gets closer, simulating the Creeper\'s tense pre-explosion sound the nearer you approach.' }
+    ]
+},  
+'project-c': {
+    title: 'Water Level Sensor Game',
+    tagline: 'A race-against-the-clock Arduino game where players must match a target water level using a sensor — and hold it steady to win.',
+    images: ['videos/Formative1.mp4'],
+    tags: [
+        { label: 'Arduino (C++)', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/arduino/arduino-original.svg' }
+    ],
+    period: 'Jan 2025', type: 'Formative Assessment',
+    overview: `A physical Arduino-based game built around a water level sensor, LED indicators, and an LCD display. The system randomly generates a target water level and challenges the player to match it using a real water sensor — all within 15 seconds. Once matched, the player must hold the sensor steady at the correct level for 5 full seconds to win. Fail to match in time, or lose stability, and the game resets. It turns a simple hardware sensor into an interactive, skill-based challenge.`,
+    features: [
+        { title: 'Random Level Generator', desc: 'The Arduino randomly assigns a target water level at the start of each round, keeping every game session unique and unpredictable.' },
+        { title: 'LED Level Indicators', desc: 'A row of LED lights visually represents the current water level in real time, giving the player instant feedback as they adjust the sensor.' },
+        { title: 'LCD Display Module', desc: 'An LCD screen shows the target water level, countdown timer, and win/lose status — guiding the player throughout the round.' },
+        { title: '15-Second Countdown', desc: 'Players must reach the target water level within 15 seconds. If time runs out before a match is detected, the game ends in a loss.' },
+        { title: '5-Second Stability Hold', desc: 'Once the correct level is matched, the player must hold the sensor steady for 5 consecutive seconds without deviation to successfully win the round.' }
+    ]
+}
+    };
+
+    let currentIndex = 0;
+    let currentImages = [];
+
+function isVideo(src) {
+    return /\.(mp4|webm|ogg)$/i.test(src);
+}
+
+function buildCarouselHTML(images) {
+    return `
+        <div class="carousel-scene" id="carouselScene">
+            <div class="carousel-stage" id="carouselStage">
+                ${images.map((src, i) => `
+                    <div class="carousel-card" data-index="${i}" onclick="handleCardClick(${i})">
+                        ${isVideo(src)
+? `<div class="video-wrapper" onclick="toggleVideo(this)">
+    <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
+        <source src="${src}" type="video/mp4">
+    </video>
+    <div class="video-play-overlay">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </div>
+    <div class="video-mute-indicator">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        tap to unmute
+    </div>
+  </div>`                          : `<img src="${src}" alt="Screenshot ${i + 1}" draggable="false">`
+                        }
+                    </div>`).join('')}
+            </div>
+        </div>
+        <div class="carousel-controls">
+            <button class="carousel-btn" id="prevBtn" onclick="carouselPrev()" title="Previous">
+                <svg viewBox="0 0 24 24"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="10 18 4 12 10 6"/></svg>
+            </button>
+            <div class="carousel-dots" id="carouselDots">
+                ${images.map((_, i) => `<div class="carousel-dot ${i===0?'active':''}" onclick="goToSlide(${i})"></div>`).join('')}
+            </div>
+            <button class="carousel-btn" id="nextBtn" onclick="carouselNext()" title="Next">
+                <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg>
+            </button>
+        </div>`;
+}
+
+    function updateCarousel() {
+        const cards = document.querySelectorAll('.carousel-card');
+        const dots  = document.querySelectorAll('.carousel-dot');
+        const total = currentImages.length;
+        cards.forEach((card, i) => {
+            card.removeAttribute('style'); card.className = 'carousel-card';
+            const diff = ((i - currentIndex) % total + total) % total;
+            if (diff === 0) card.classList.add('pos-center');
+            else if (diff === 1) card.classList.add('pos-next');
+            else if (diff === total - 1) card.classList.add('pos-prev');
+            else if (diff === 2) card.classList.add('pos-far-right');
+            else if (diff === total - 2 && total > 4) card.classList.add('pos-far-left');
+            else card.style.cssText = 'opacity:0;pointer-events:none;left:50%;width:0;height:0;transform:translateX(-50%) translateY(-50%);transition:none;border:none;';
+        });
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
+        // Hide controls when only 1 slide
+const controls = document.querySelector('.carousel-controls');
+if (controls) controls.style.display = currentImages.length <= 1 ? 'none' : 'flex';
+    }
+
+    function setActiveBtn(which) {
+        const prev = document.getElementById('prevBtn'), next = document.getElementById('nextBtn');
+        if (!prev || !next) return;
+        prev.classList.remove('active'); next.classList.remove('active');
+        if (which === 'prev') prev.classList.add('active');
+        if (which === 'next') next.classList.add('active');
+    }
+
+    function carouselNext() { currentIndex = (currentIndex + 1) % currentImages.length; updateCarousel(); setActiveBtn('next'); }
+    function carouselPrev() { currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length; updateCarousel(); setActiveBtn('prev'); }
+    function goToSlide(i) {
+        currentIndex = i; updateCarousel();
+        const prev = document.getElementById('prevBtn'), next = document.getElementById('nextBtn');
+        if (prev) prev.classList.remove('active'); if (next) next.classList.remove('active');
+    }
+    function handleCardClick(i) { if (i !== currentIndex) { currentIndex = i; updateCarousel(); } }
+
+    document.addEventListener('keydown', (e) => { if (e.key==='ArrowLeft') carouselPrev(); if (e.key==='ArrowRight') carouselNext(); });
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, {passive:true});
+    document.addEventListener('touchend', (e) => { const diff = touchStartX - e.changedTouches[0].clientX; if (Math.abs(diff) > 50) { diff > 0 ? carouselNext() : carouselPrev(); } }, {passive:true});
+
+    function getProjectId() { return new URLSearchParams(window.location.search).get('project'); }
+
+    function buildTagsHTML(tags) {
+        return tags.map(t => `<span class="tag"><img src="${t.icon}" alt="${t.label}">${t.label}</span>`).join('');
+    }
+    function buildFeaturesHTML(features) {
+        return features.map(f => `<li><strong>${f.title}:</strong> ${f.desc}</li>`).join('');
+    }
+    function buildDeveloperHTML(dev) {
+        if (!dev) return '';
+        return `<div class="developer-credit">
+            <span class="developer-credit-label">Developed by</span>
+            <div class="developer-credit-logo-wrapper"><img src="${dev.logo}" alt="${dev.name}" class="developer-credit-logo"></div>
+            <span class="developer-credit-name">${dev.name}</span>
+            <p class="developer-credit-caption">${dev.caption}</p>
+        </div>`;
+    }
+
+    function render(id) {
+        const p = projects[id];
+        const wrapper = document.getElementById('detailWrapper');
+        if (!p) {
+            wrapper.innerHTML = `<div class="not-found"><h2>Project not found.</h2><p>The project you're looking for doesn't exist or has been removed.</p><a href="projects.html" style="color:#9046ff;font-family:'Roboto Mono',monospace;font-size:0.85rem;text-decoration:none;margin-top:20px;display:inline-block;">← Back to Projects</a></div>`;
+            return;
+        }
+        document.title = `Project | ${p.title}`;
+        currentImages = p.images; currentIndex = 0;
+        wrapper.innerHTML = `
+            ${buildCarouselHTML(p.images)}
+            <div class="detail-content">
+                <h1 class="detail-title">${p.title}</h1>
+                <p class="detail-tagline">${p.tagline}</p>
+                <div class="detail-meta-row">
+                    <div class="detail-tags">${buildTagsHTML(p.tags)}</div>
+                    <span style="font-family:'Roboto Mono',monospace;font-size:0.78rem;color:#555;white-space:nowrap;">${p.type} &nbsp;·&nbsp; ${p.period}</span>
+                </div>
+                <div class="detail-section"><h2>Overview</h2><p>${p.overview}</p></div>
+                <div class="detail-section"><h2>Key Features</h2><ul class="detail-bullets">${buildFeaturesHTML(p.features)}</ul></div>
+                ${buildDeveloperHTML(p.developer)}
+            </div>`;
+        requestAnimationFrame(() => updateCarousel());
+    }
+
+    document.getElementById('backBtn').href = 'projects.html';
+    render(getProjectId());
+// Auto-unmute on first user interaction with the page
+document.addEventListener('click', function unmuteOnFirstInteraction() {
+    document.querySelectorAll('.video-wrapper video').forEach(video => {
+        video.muted = false;
+        video.volume = 1;
+        const indicator = video.parentElement.querySelector('.video-mute-indicator');
+        if (indicator) {
+            indicator.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg> tap to mute`;
+        }
+    });
+    document.removeEventListener('click', unmuteOnFirstInteraction);
+}, { once: true });
+
+function toggleVideo(wrapper) {
+    const video = wrapper.querySelector('video');
+    const muteIndicator = wrapper.querySelector('.video-mute-indicator');
+
+    if (video.paused) {
+        video.play();
+        wrapper.classList.remove('paused');
+    } else {
+        // Toggle mute on subsequent clicks instead of pause
+        if (video.muted) {
+            video.muted = false;
+            video.volume = 1;
+            if (muteIndicator) muteIndicator.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg> tap to mute`;
+        } else {
+            video.muted = true;
+            if (muteIndicator) muteIndicator.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/></svg> tap to unmute`;
+        }
+    }
+}
+</script>
+
+<script>
+(function initClickBurst() {
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+    const streaks = [];
+    document.addEventListener('click', (e) => {
+        const palettes = [[255,255,255],[220,235,255],[180,140,255],[140,180,255],[200,160,255],[100,200,255]];
+        for (let i = 0; i < 12; i++) {
+            const angle = (i / 12) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
+            const [r, g, b] = palettes[i % palettes.length];
+            streaks.push({ x:e.clientX, y:e.clientY, angle, speed:2+Math.random(), maxDist:50+Math.random()*50, trailLen:40+Math.random()*30, width:1.2+Math.random()*1.5, alpha:0.55+Math.random()*0.35, r, g, b, dist:0, done:false });
+        }
+    });
+    
+    function drawFrame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = streaks.length - 1; i >= 0; i--) {
+            const s = streaks[i];
+            if (s.done) { streaks.splice(i, 1); continue; }
+            const hx = s.x + Math.cos(s.angle) * s.dist, hy = s.y + Math.sin(s.angle) * s.dist;
+            const tailDist = Math.max(0, s.dist - s.trailLen);
+            const tx = s.x + Math.cos(s.angle) * tailDist, ty = s.y + Math.sin(s.angle) * tailDist;
+            const progress = s.dist / s.maxDist;
+            const fadeAlpha = progress > 0.70 ? s.alpha * (1 - (progress - 0.70) / 0.30) : s.alpha;
+            const grad = ctx.createLinearGradient(tx, ty, hx, hy);
+            grad.addColorStop(0, `rgba(${s.r},${s.g},${s.b},0)`);
+            grad.addColorStop(0.5, `rgba(${s.r},${s.g},${s.b},${(fadeAlpha*0.4).toFixed(3)})`);
+            grad.addColorStop(1, `rgba(255,255,255,${fadeAlpha.toFixed(3)})`);
+            ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(hx, hy);
+            ctx.strokeStyle = grad; ctx.lineWidth = s.width; ctx.lineCap = 'round'; ctx.stroke();
+            ctx.beginPath(); ctx.arc(hx, hy, s.width * 0.9, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${(fadeAlpha*1.8).toFixed(3)})`; ctx.fill();
+            s.dist += s.speed; if (s.dist >= s.maxDist) s.done = true;
+        }
+        requestAnimationFrame(drawFrame);
+    }
+    requestAnimationFrame(drawFrame);
+})();
+</script>
+
+</body>
+</html>
