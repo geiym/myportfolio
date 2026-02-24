@@ -14,14 +14,14 @@ This portfolio serves as a digital resume and project showcase for an IT student
 
 ```
 portfolio/
-├── index.html            # Main page (Home, About, Skills, Projects, Contact)
-├── projects.html         # Full projects listing page
-├── project-detail.html   # Individual project detail view
-├── blog.html             # Blog/articles page powered by Dev.to API
-├── script.js             # Main JavaScript (interactions, API calls, form logic)
-├── styles.css            # Global stylesheet
-├── images/               # Profile photo, project screenshots, icons
-└── README.md             # This file
+├── index.html          # Main page (Home, About, Skills, Projects, Contact)
+├── projects.html       # Full projects listing page
+├── project-detail.html # Individual project detail view
+├── blog.html           # Blog/articles page powered by Dev.to API
+├── script.js           # Main JavaScript (interactions, API calls, form logic)
+├── styles.css          # Global stylesheet
+├── images/             # Profile photo, project screenshots, icons
+└── README.md           # This file
 ```
 
 ---
@@ -45,11 +45,16 @@ portfolio/
 - **Endpoint:** `https://api.web3forms.com/submit`
 - **Purpose:** Handles actual form submission for both the Contact form and the Hire Me inquiry form. Processes the form data and routes messages to the owner's email without requiring a backend server.
 
+### 5. Tidio (Live Chat API)
+- **Source:** Tidio Live Chat (`https://code.tidio.co/{public_key}.js`)
+- **Purpose:** Integrates a real-time chatbot and live chat widget into the portfolio. Visitors can send messages directly through the Tidio chat bubble that appears on the site, and all incoming messages are received and manageable by the portfolio owner via the Tidio dashboard. This replaces or supplements traditional contact methods by offering an instant, conversational way for recruiters, clients, or collaborators to reach out.
+
 ---
 
 # Transaction Features
 
 ### Transaction 1 — Contact Form Submission
+
 Located in the **Contact** section of `index.html`.
 
 - **What it does:** Allows visitors to send a message directly to the portfolio owner.
@@ -64,6 +69,7 @@ Located in the **Contact** section of `index.html`.
   - ✗ Error: displays a red error message prompting the user to retry.
 
 ### Transaction 2 — Hire Me / Project Inquiry Form
+
 Triggered by the **"Hire Me"** button; opens a modal overlay on `index.html`.
 
 - **What it does:** Lets potential clients submit a formal project inquiry including project type, budget range, and a description.
@@ -84,6 +90,7 @@ Triggered by the **"Hire Me"** button; opens a modal overlay on `index.html`.
 # How to Run / View the Project
 
 ### Option A — Open Locally
+
 1. Download or clone the project folder.
 2. Open `index.html` in any modern web browser (Chrome, Firefox, Edge).
 3. No build tools or local server required for basic functionality.
@@ -91,6 +98,7 @@ Triggered by the **"Hire Me"** button; opens a modal overlay on `index.html`.
 > **Note:** Some browsers may block certain `fetch()` requests when opening files directly from the filesystem (`file://` protocol). If API content does not load, use Option B.
 
 ### Option B — Use a Local Server (Recommended)
+
 If you have VS Code, use the **Live Server** extension:
 1. Right-click `index.html` → **Open with Live Server**.
 
@@ -102,6 +110,7 @@ python -m http.server 8080
 Then open `http://localhost:8080` in your browser.
 
 ### Option C — GitHub Pages / Hosting
+
 Upload the project folder to a GitHub repository and enable **GitHub Pages** under Settings → Pages to get a live public URL.
 
 ---
@@ -116,7 +125,7 @@ Upload the project folder to a GitHub repository and enable **GitHub Pages** und
 | 3D / Canvas | Three.js (cursor particle effect), HTML5 Canvas API |
 | Map | Leaflet.js + OpenStreetMap |
 | Fonts | Google Fonts (Roboto, Nunito Sans, Lexend, Roboto Mono, etc.) |
-| APIs | GitHub API, Dev.to API, Web3Forms API |
+| APIs | GitHub API, Dev.to API, Web3Forms API, Tidio Live Chat API |
 
 ---
 
@@ -133,6 +142,7 @@ Upload the project folder to a GitHub repository and enable **GitHub Pages** und
 - Spotlight glow effect on tool and expertise cards
 - Mobile-responsive layout with hamburger navigation
 - Dark-themed, consistent color scheme (purple accent)
+- Live chat widget powered by Tidio for real-time visitor messaging
 
 ---
 
@@ -141,3 +151,4 @@ Upload the project folder to a GitHub repository and enable **GitHub Pages** und
 - All APIs must be active and connected to the internet during the demo for live data to appear.
 - The Web3Forms access key is embedded in the JavaScript. For production use, consider securing this via a backend proxy.
 - Real payment processing is not implemented; the Hire Me form is a project inquiry simulation only.
+- Tidio messages are managed through the Tidio dashboard. An active Tidio account is required for the chat widget to function.
